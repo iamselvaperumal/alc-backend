@@ -38,7 +38,7 @@ const corsOptions = {
     // ✅ Allow same-origin requests (Vercel internal / server-to-server)
     if (!origin) {
       console.log("CORS allowed: same-origin or server request");
-      return callback(null, true);
+      return callback(null, "https://alc-project-jtm7.vercel.app");
     }
 
     // ✅ Allow exact matches
@@ -61,6 +61,7 @@ const corsOptions = {
     callback(new Error("Not allowed by CORS"));
   },
   credentials: true,
+  origin: true,
 };
 
 app.use(cors(corsOptions));
