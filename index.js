@@ -16,77 +16,108 @@ try {
   process.exit(1);
 }
 
+
 const app = express();
 
-// Middleware
+console.log("🚀 Server booting...");
+
+/* --------------------------------------------------
+   GLOBAL REQUEST LOGGER (FIRST MIDDLEWARE)
+-------------------------------------------------- */
+app.use((req, res, next) => {
+  console.log("\n==============================");
+  console.log("➡️ Incoming Request");
+  console.log("Method:", req.method);
+  console.log("URL:", req.url);
+  console.log("Origin:", req.headers.origin);
+  console.log("Referer:", req.headers.referer);
+  console.log("==============================");
+  next();
+});
+
+/* --------------------------------------------------
+   BASIC MIDDLEWARE
+-------------------------------------------------- */
 app.use(express.json());
 app.use(cookieParser());
 
+console.log("✅ JSON + Cookies middleware loaded");
+
+/* --------------------------------------------------
+   CORS DEBUG
+-------------------------------------------------- */
 app.use(cors({
   origin: (origin, cb) => {
-    if (!origin) return cb(null, true);
-    if (origin.endsWith(".vercel.app")) return cb(null, true);
-    cb(new Error("CORS blocked"));
+    console.log("🌐 CORS CHECK → Origin:", origin);
+
+    if (!origin) {
+      console.log("✅ CORS ALLOW (no origin)");
+      return cb(null, true);
+    }
+
+    if (origin.endsWith(".vercel.app")) {
+      console.log("✅ CORS ALLOW (vercel domain)");
+      return cb(null, true);
+    }
+
+    console.log("❌ CORS BLOCKED:", origin);
+    return cb(new Error("CORS blocked"));
   },
   credentials: true
 }));
 
-app.use((err, req, res, next) => {
-  console.error("Error:", err);
-console.log("test1:");
-  // 🔥 ADD THIS
-  res.header(
-    "Access-Control-Allow-Origin",
-    "https://alc-project-jtm7.vercel.app"
-  );
-  res.header("Access-Control-Allow-Credentials", "true");
-console.log("test2:");
-  const statusCode = err.status || 500;
-  res.status(statusCode).json({
-    error: err.message || "Internal Server Error",
-  });
+console.log("✅ CORS middleware loaded");
 
-  console.log("test3:");
+/* --------------------------------------------------
+   AFTER CORS CHECKPOINT
+-------------------------------------------------- */
+app.use((req, res, next) => {
+  console.log("➡️ Passed CORS middleware");
+  next();
 });
-// // ✅ CORS CONFIG
-// const allowedPreview = /^https:\/\/alc-project.*\.vercel\.app$/;
 
-// app.use(
-//   cors({
-//     origin: function (origin, callback) {
-//       // Allow server-to-server (Postman, Vercel internal)
-//       if (!origin) {
-//         console.log("CORS allowed: no origin (server request)");
-//         return callback(null, true);
-//       }
+/* --------------------------------------------------
+   DATABASE DEBUG
+-------------------------------------------------- */
+let dbConnected = false;
 
-//       // Allow Vercel previews
-//       if (allowedPreview.test(origin)) {
-//         console.log("CORS allowed for preview:", origin);
-//         return callback(null, true);
-//       }
+const connectDB = async () => {
+  if (dbConnected) {
+    console.log("🟢 DB already connected (cached)");
+    return;
+  }
 
-//       // Allow production frontend (IMPORTANT)
-//       if (origin === "https://your-production-domain.vercel.app") {
-//         console.log("CORS allowed for prod:", origin);
-//         return callback(null, true);
-//       }
+  console.log("🟡 Connecting to MongoDB...");
 
-//       console.warn("CORS blocked:", origin);
-//       callback(new Error("Not allowed by CORS"));
-//     },
-//     credentials: true,
-//     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-//     allowedHeaders: ["Content-Type", "Authorization"],
-//   })
-// );
+  try {
+    await mongoose.connect(process.env.MONGO_URI, {
+      serverSelectionTimeoutMS: 5000,
+      socketTimeoutMS: 45000,
+    });
 
-// ✅ IMPORTANT: Handle preflight manually (fixes controller not reached)
-// app.options("*", (req, res) => {
-//   res.status(200).end();
-// });
+    dbConnected = true;
+    console.log("🟢 MongoDB Connected:", mongoose.connection.host);
+  } catch (err) {
+    console.log("🔴 MongoDB FAILED:", err.message);
+    throw err;
+  }
+};
 
+/* --------------------------------------------------
+   DB MIDDLEWARE
+-------------------------------------------------- */
+app.use(async (req, res, next) => {
+  console.log("➡️ Enter DB middleware");
 
+  try {
+    await connectDB();
+    console.log("➡️ DB middleware DONE");
+    next();
+  } catch (error) {
+    console.log("❌ DB middleware ERROR");
+    res.status(500).json({ error: "Database connection failed" });
+  }
+});
 
 // Database connection flag to prevent multiple connections
 let dbConnected = false;
@@ -116,22 +147,45 @@ const connectDB = async () => {
 };
 
 // Middleware to connect to DB before each request
-app.use(async (req, res, next) => {
-  try {
-    await connectDB();
-    next();
-  } catch (error) {
-    res.status(500).json({
-      error: "Database connection failed",
-      message:
-        process.env.NODE_ENV === "development" ? error.message : undefined,
-    });
-  }
+// app.use(async (req, res, next) => {
+//   try {
+//     await connectDB();
+//     next();
+//   } catch (error) {
+//     res.status(500).json({
+//       error: "Database connection failed",
+//       message:
+//         process.env.NODE_ENV === "development" ? error.message : undefined,
+//     });
+//   }
+// });
+
+/* --------------------------------------------------
+   BEFORE ROUTES CHECKPOINT
+-------------------------------------------------- */
+app.use((req, res, next) => {
+  console.log("➡️ Reached BEFORE ROUTES");
+  next();
 });
 
+/* --------------------------------------------------
+   ROOT TEST
+-------------------------------------------------- */
 app.get("/", (req, res) => {
-  res.send("ALC Manufacturing TEX API is running...");
+  console.log("🏠 Root route hit");
+  res.send("API is running...");
 });
+
+/* --------------------------------------------------
+   ROUTE DEBUG WRAPPER
+-------------------------------------------------- */
+function routeLogger(name, router) {
+  return (req, res, next) => {
+    console.log(`📦 Entering Route Group: ${name}`);
+    router(req, res, next);
+  };
+}
+
 
 // Routes
 app.use("/api/auth", require("./routes/authRoutes"));
@@ -148,17 +202,22 @@ app.use("/api/awards", require("./routes/awardRoutes"));
 
 // Error handling middleware
 app.use((err, req, res, next) => {
-  console.error("Error:", err);
-  const statusCode = err.status || 500;
-  const errorMessage = err.message || "Internal Server Error";
+  console.log("💥 ERROR HANDLER TRIGGERED");
+  console.log("Error:", err.message);
 
-  res.status(statusCode).json({
-    error: errorMessage,
+  res.header("Access-Control-Allow-Origin", req.headers.origin || "*");
+  res.header("Access-Control-Allow-Credentials", "true");
+
+  res.status(err.status || 500).json({
+    error: err.message || "Internal Server Error",
   });
 });
 
-// Catch-all 404 handler
+/* --------------------------------------------------
+   404 HANDLER
+-------------------------------------------------- */
 app.use((req, res) => {
+  console.log("❓ 404 HANDLER HIT:", req.method, req.url);
   res.status(404).json({ error: "Not Found" });
 });
 
