@@ -120,31 +120,31 @@ app.use(async (req, res, next) => {
 });
 
 // Database connection flag to prevent multiple connections
-let dbConnected = false;
+// let dbConnected = false;
 
-// Lazy database connection function (connects only when needed)
-const connectDB = async () => {
-  if (dbConnected) return;
+// // Lazy database connection function (connects only when needed)
+// const connectDB = async () => {
+//   if (dbConnected) return;
 
-  try {
-    if (!process.env.MONGO_URI) {
-      throw new Error("MONGO_URI environment variable is not set");
-    }
+//   try {
+//     if (!process.env.MONGO_URI) {
+//       throw new Error("MONGO_URI environment variable is not set");
+//     }
 
-    await mongoose.connect(process.env.MONGO_URI, {
-      // Serverless-friendly options
-      serverSelectionTimeoutMS: 5000,
-      socketTimeoutMS: 45000,
-    });
+//     await mongoose.connect(process.env.MONGO_URI, {
+//       // Serverless-friendly options
+//       serverSelectionTimeoutMS: 5000,
+//       socketTimeoutMS: 45000,
+//     });
 
-    dbConnected = true;
-    console.log(`MongoDB Connected: ${mongoose.connection.host}`);
-  } catch (error) {
-    console.error(`Database Connection Error: ${error.message}`);
-    dbConnected = false;
-    throw error; // Re-throw to handle in middleware
-  }
-};
+//     dbConnected = true;
+//     console.log(`MongoDB Connected: ${mongoose.connection.host}`);
+//   } catch (error) {
+//     console.error(`Database Connection Error: ${error.message}`);
+//     dbConnected = false;
+//     throw error; // Re-throw to handle in middleware
+//   }
+// };
 
 // Middleware to connect to DB before each request
 // app.use(async (req, res, next) => {
