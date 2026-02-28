@@ -3,7 +3,7 @@ const User = require("../models/User");
 
 const protect = async (req, res, next) => {
   // let token;
-
+console.log("test");
   res.header("Access-Control-Allow-Origin", "https://alc-project-jtm7.vercel.app");
   res.header("Access-Control-Allow-Credentials", "false");
   res.header("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
@@ -44,6 +44,8 @@ const protect = async (req, res, next) => {
 };
 
 const adminOnly = (req, res, next) => {
+
+  console.log("error");
   if (req.user && req.user.role === "Admin") {
     next();
   } else {
