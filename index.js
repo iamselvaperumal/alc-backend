@@ -22,38 +22,47 @@ const app = express();
 app.use(express.json());
 app.use(cookieParser());
 
-// ✅ CORS CONFIG
-const allowedPreview = /^https:\/\/alc-project.*\.vercel\.app$/;
+app.use(cors({
+  origin: (origin, cb) => {
+    if (!origin) return cb(null, "https://alc-project-jtm7.vercel.app");
+    if (origin.endsWith(".vercel.app")) return cb(null, origin);
+    cb(new Error("CORS blocked"));
+  },
+  credentials: true
+}));
 
-app.use(
-  cors({
-    origin: function (origin, callback) {
-      // Allow server-to-server (Postman, Vercel internal)
-      if (!origin) {
-        console.log("CORS allowed: no origin (server request)");
-        return callback(null, true);
-      }
+// // ✅ CORS CONFIG
+// const allowedPreview = /^https:\/\/alc-project.*\.vercel\.app$/;
 
-      // Allow Vercel previews
-      if (allowedPreview.test(origin)) {
-        console.log("CORS allowed for preview:", origin);
-        return callback(null, true);
-      }
+// app.use(
+//   cors({
+//     origin: function (origin, callback) {
+//       // Allow server-to-server (Postman, Vercel internal)
+//       if (!origin) {
+//         console.log("CORS allowed: no origin (server request)");
+//         return callback(null, true);
+//       }
 
-      // Allow production frontend (IMPORTANT)
-      if (origin === "https://your-production-domain.vercel.app") {
-        console.log("CORS allowed for prod:", origin);
-        return callback(null, true);
-      }
+//       // Allow Vercel previews
+//       if (allowedPreview.test(origin)) {
+//         console.log("CORS allowed for preview:", origin);
+//         return callback(null, true);
+//       }
 
-      console.warn("CORS blocked:", origin);
-      callback(new Error("Not allowed by CORS"));
-    },
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-  })
-);
+//       // Allow production frontend (IMPORTANT)
+//       if (origin === "https://your-production-domain.vercel.app") {
+//         console.log("CORS allowed for prod:", origin);
+//         return callback(null, true);
+//       }
+
+//       console.warn("CORS blocked:", origin);
+//       callback(new Error("Not allowed by CORS"));
+//     },
+//     credentials: true,
+//     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+//     allowedHeaders: ["Content-Type", "Authorization"],
+//   })
+// );
 
 // ✅ IMPORTANT: Handle preflight manually (fixes controller not reached)
 // app.options("*", (req, res) => {
