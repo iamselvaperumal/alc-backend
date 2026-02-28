@@ -46,17 +46,22 @@ console.log("✅ JSON + Cookies middleware loaded");
 /* --------------------------------------------------
    CORS DEBUG
 -------------------------------------------------- */
-app.use(cors({
+/* --------------------------------------------------
+   CORS CONFIG (FIXED)
+-------------------------------------------------- */
+const corsOptions = {
   origin: "https://alc-project-jtm7.vercel.app",
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
-}));
+};
 
-// Explicitly handle preflight
-app.options("*", cors());
+app.use(cors(corsOptions));
+
+// Handle preflight using SAME config
+app.options("*", cors(corsOptions));
+
 console.log("✅ CORS middleware loaded");
-
 /* --------------------------------------------------
    AFTER CORS CHECKPOINT
 -------------------------------------------------- */
