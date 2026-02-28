@@ -24,8 +24,8 @@ app.use(cookieParser());
 
 app.use(cors({
   origin: (origin, cb) => {
-    if (!origin) return cb(null, "https://alc-project-jtm7.vercel.app");
-    if (origin.endsWith(".vercel.app")) return cb(null, origin);
+    if (!origin) return cb(null, true);
+    if (origin.endsWith(".vercel.app")) return cb(null, true);
     cb(new Error("CORS blocked"));
   },
   credentials: true
