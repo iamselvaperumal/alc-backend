@@ -22,69 +22,45 @@ const app = express();
 app.use(express.json());
 app.use(cookieParser());
 
-// ─── CORS Configuration ────────────────────────────────────────────────────
-const allowedOrigins = [
-  "http://localhost:5173",
-  "http://localhost:3000",
-  "https://alc-project-jtm7.vercel.app",
-];
+// ✅ CORS CONFIG
+const allowedPreview = /^https:\/\/alc-project.*\.vercel\.app$/;
 
-console.log("Allowed Origins:", allowedOrigins);
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      // Allow server-to-server (Postman, Vercel internal)
+      if (!origin) {
+        console.log("CORS allowed: no origin (server request)");
+        return callback(null, true);
+      }
 
-const corsOptions = {
-  origin: function (origin, callback) {
-    console.log("Incoming request from origin:", origin);
+      // Allow Vercel previews
+      if (allowedPreview.test(origin)) {
+        console.log("CORS allowed for preview:", origin);
+        return callback(null, true);
+      }
 
-    // ✅ Allow same-origin requests (Vercel internal / server-to-server)
-    if (!origin) {
-      console.log("CORS allowed: same-origin or server request");
-      return callback(null, "https://alc-project-jtm7.vercel.app");
-    }
+      // Allow production frontend (IMPORTANT)
+      if (origin === "https://your-production-domain.vercel.app") {
+        console.log("CORS allowed for prod:", origin);
+        return callback(null, true);
+      }
 
-    // ✅ Allow exact matches
-    if (allowedOrigins.includes(origin)) {
-      console.log("CORS allowed for exact origin:", origin);
-      return callback(null, true);
-    }
+      console.warn("CORS blocked:", origin);
+      callback(new Error("Not allowed by CORS"));
+    },
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
 
-    // ✅ Allow ONLY your Vercel preview deployments (safer)
-    if (
-      origin.startsWith("https://alc-project") &&
-      origin.endsWith(".vercel.app")
-    ) {
-      console.log("CORS allowed for Vercel preview:", origin);
-      return callback(null, true);
-    }
+// ✅ IMPORTANT: Handle preflight manually (fixes controller not reached)
+app.options("*", (req, res) => {
+  res.status(200).end();
+});
 
-    // ❌ Block everything else
-    console.warn("CORS blocked for origin:", origin);
-    callback(new Error("Not allowed by CORS"));
-  },
-  credentials: true,
-  origin: true,
-};
 
-const cors = require("cors");
-
-app.set("trust proxy", 1);
-
-app.use(cors({
-  origin: (origin, cb) => {
-    console.log("Origin:", origin);
-
-    // Allow server/internal requests
-    if (!origin) return cb(null, true);
-
-    // Allow localhost
-    if (origin.includes("localhost")) return cb(null, origin);
-
-    // Allow ALL Vercel deployments
-    if (origin.endsWith(".vercel.app")) return cb(null, origin);
-
-    return cb(new Error("CORS blocked"));
-  },
-  credentials: true,
-}));
 // Database connection flag to prevent multiple connections
 let dbConnected = false;
 
