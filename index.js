@@ -31,6 +31,23 @@ app.use(cors({
   credentials: true
 }));
 
+app.use((err, req, res, next) => {
+  console.error("Error:", err);
+console.log("test1:");
+  // 🔥 ADD THIS
+  res.header(
+    "Access-Control-Allow-Origin",
+    "https://alc-project-jtm7.vercel.app"
+  );
+  res.header("Access-Control-Allow-Credentials", "true");
+console.log("test2:");
+  const statusCode = err.status || 500;
+  res.status(statusCode).json({
+    error: err.message || "Internal Server Error",
+  });
+
+  console.log("test3:");
+});
 // // ✅ CORS CONFIG
 // const allowedPreview = /^https:\/\/alc-project.*\.vercel\.app$/;
 
