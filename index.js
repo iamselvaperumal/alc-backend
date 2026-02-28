@@ -47,25 +47,14 @@ console.log("✅ JSON + Cookies middleware loaded");
    CORS DEBUG
 -------------------------------------------------- */
 app.use(cors({
-  origin: (origin, cb) => {
-    console.log("🌐 CORS CHECK → Origin:", origin);
-
-    if (!origin) {
-      console.log("✅ CORS ALLOW (no origin)");
-      return cb(null, true);
-    }
-
-    if (origin.endsWith(".vercel.app")) {
-      console.log("✅ CORS ALLOW (vercel domain)");
-      return cb(null, true);
-    }
-
-    console.log("❌ CORS BLOCKED:", origin);
-    return cb(new Error("CORS blocked"));
-  },
-  credentials: true
+  origin: "https://alc-project-jtm7.vercel.app",
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
 }));
 
+// Explicitly handle preflight
+app.options("*", cors());
 console.log("✅ CORS middleware loaded");
 
 /* --------------------------------------------------
