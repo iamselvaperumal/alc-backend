@@ -28,24 +28,41 @@ const allowedOrigins = [
   "http://localhost:3000",
   "https://alc-project-jtm7.vercel.app",
 ];
+
 console.log("Allowed Origins:", allowedOrigins);
+
 const corsOptions = {
   origin: function (origin, callback) {
     console.log("Incoming request from origin:", origin);
+
+    // ✅ Allow same-origin requests (Vercel internal / server-to-server)
+    if (!origin) {
+      console.log("CORS allowed: same-origin or server request");
+      return callback(null, true);
+    }
+
+    // ✅ Allow exact matches
+    if (allowedOrigins.includes(origin)) {
+      console.log("CORS allowed for exact origin:", origin);
+      return callback(null, true);
+    }
+
+    // ✅ Allow ONLY your Vercel preview deployments (safer)
     if (
-      !origin ||
-      allowedOrigins.includes(origin) ||
+      origin.startsWith("https://alc-project") &&
       origin.endsWith(".vercel.app")
     ) {
-      console.log("CORS allowed for origin:", origin);
-      callback(null, true);
-    } else {
-      console.warn("CORS blocked for origin:", origin);
-      callback(new Error("Not allowed by CORS"));
+      console.log("CORS allowed for Vercel preview:", origin);
+      return callback(null, true);
     }
+
+    // ❌ Block everything else
+    console.warn("CORS blocked for origin:", origin);
+    callback(new Error("Not allowed by CORS"));
   },
   credentials: true,
 };
+
 app.use(cors(corsOptions));
 // Database connection flag to prevent multiple connections
 let dbConnected = false;
