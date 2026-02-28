@@ -49,26 +49,22 @@ console.log("✅ JSON + Cookies middleware loaded");
 /* --------------------------------------------------
    CORS CONFIG (FIXED)
 -------------------------------------------------- */
-const corsOptions = {
-  origin: "https://alc-project-jtm7.vercel.app",
-  credentials: true,
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-};
+const allowedOrigin = "https://alc-project-jtm7.vercel.app";
 
-app.use(cors(corsOptions));
+app.use((req, res, next) => {
+  console.log("test");
+  res.header("Access-Control-Allow-Origin", allowedOrigin);
+  res.header("Access-Control-Allow-Credentials", "true");
+  res.header("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
+  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
 
-// Handle preflight using SAME config
-//app.options(/.*/, cors(corsOptions));
+  if (req.method === "OPTIONS") {
+    console.log("test 1");
+    return res.sendStatus(200);
+  }
 
-app.options(/.*/, (req, res) => {
-  res.setHeader("Access-Control-Allow-Origin", "https://alc-project-jtm7.vercel.app");
-  res.setHeader("Access-Control-Allow-Credentials", "true");
-  res.setHeader("Access-Control-Allow-Methods", "GET,POST,PUT,PATCH,DELETE,OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type,Authorization,X-Requested-With");
-  return res.status(200).end();
+  next();
 });
-
 console.log("✅ CORS middleware loaded");
 /* --------------------------------------------------
    AFTER CORS CHECKPOINT
