@@ -61,6 +61,7 @@ app.options("*", (req, res) => {
 });
 
 
+
 // Database connection flag to prevent multiple connections
 let dbConnected = false;
 
