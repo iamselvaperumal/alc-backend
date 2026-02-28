@@ -56,9 +56,9 @@ app.use(
 );
 
 // ✅ IMPORTANT: Handle preflight manually (fixes controller not reached)
-app.options("*", (req, res) => {
-  res.status(200).end();
-});
+// app.options("*", (req, res) => {
+//   res.status(200).end();
+// });
 
 
 
