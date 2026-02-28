@@ -50,23 +50,21 @@ const loginUser = async (req, res) => {
     const user = await User.findOne({ email });
 
     if (user && (await user.matchPassword(password))) {
-      const token = generateToken(user._id);
-
+      // const token = generateToken(user._id);
       // Set cookie (optional but good for security)
-      res.cookie("token", token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production", // HTTPS only in production
-        sameSite: "none", // VERY IMPORTANT for cross-domain
-        maxAge: 30 * 24 * 60 * 60 * 1000,
-      });
-
-      res.json({
-        _id: user._id,
-        username: user.username,
-        email: user.email,
-        role: user.role,
-        token,
-      });
+      // res.cookie("token", token, {
+      //   httpOnly: true,
+      //   secure: process.env.NODE_ENV === "production", // HTTPS only in production
+      //   sameSite: "none", // VERY IMPORTANT for cross-domain
+      //   maxAge: 30 * 24 * 60 * 60 * 1000,
+      // });
+      // res.json({
+      //   _id: user._id,
+      //   username: user.username,
+      //   email: user.email,
+      //   role: user.role,
+      //   token,
+      // });
     } else {
       res.status(401).json({ message: "Invalid email or password" });
     }
