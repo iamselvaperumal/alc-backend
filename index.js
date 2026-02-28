@@ -64,7 +64,27 @@ const corsOptions = {
   origin: true,
 };
 
-app.use(cors(corsOptions));
+const cors = require("cors");
+
+app.set("trust proxy", 1);
+
+app.use(cors({
+  origin: (origin, cb) => {
+    console.log("Origin:", origin);
+
+    // Allow server/internal requests
+    if (!origin) return cb(null, true);
+
+    // Allow localhost
+    if (origin.includes("localhost")) return cb(null, origin);
+
+    // Allow ALL Vercel deployments
+    if (origin.endsWith(".vercel.app")) return cb(null, origin);
+
+    return cb(new Error("CORS blocked"));
+  },
+  credentials: true,
+}));
 // Database connection flag to prevent multiple connections
 let dbConnected = false;
 
