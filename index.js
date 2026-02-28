@@ -23,21 +23,30 @@ app.use(express.json());
 app.use(cookieParser());
 
 // ─── CORS Configuration ────────────────────────────────────────────────────
+const allowedOrigins = [
+  "http://localhost:5173",
+  "http://localhost:3000",
+  "https://alc-project-jtm7.vercel.app",
+];
+console.log("Allowed Origins:", allowedOrigins);
 const corsOptions = {
-  origin: [
-    "http://localhost:5173",
-    "http://localhost:3000",
-    "https://alc-project-jtm7.vercel.app/",
-  ],
+  origin: function (origin, callback) {
+    console.log("Incoming request from origin:", origin);
+    if (
+      !origin ||
+      allowedOrigins.includes(origin) ||
+      origin.endsWith(".vercel.app")
+    ) {
+      console.log("CORS allowed for origin:", origin);
+      callback(null, true);
+    } else {
+      console.warn("CORS blocked for origin:", origin);
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
   credentials: true,
-  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
-  exposedHeaders: ["Set-Cookie"],
-  optionsSuccessStatus: 200,
 };
-
 app.use(cors(corsOptions));
-
 // Database connection flag to prevent multiple connections
 let dbConnected = false;
 
