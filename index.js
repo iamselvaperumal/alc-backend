@@ -59,7 +59,7 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 // Handle preflight using SAME config
-app.options("/*", cors(corsOptions));
+app.options(/.*/, cors(corsOptions));
 
 console.log("✅ CORS middleware loaded");
 /* --------------------------------------------------
