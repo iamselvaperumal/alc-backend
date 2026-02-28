@@ -225,5 +225,5 @@ app.use((req, res) => {
 //   console.log(`Server running on http://localhost:${PORT}`);
 // });
 
-const app = require("../server"); // path to your main file
+//const app = require("../server"); // path to your main file
 module.exports = app;
