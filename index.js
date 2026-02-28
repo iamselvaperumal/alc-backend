@@ -59,7 +59,15 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 // Handle preflight using SAME config
-app.options(/.*/, cors(corsOptions));
+//app.options(/.*/, cors(corsOptions));
+
+app.options(/.*/, (req, res) => {
+  res.setHeader("Access-Control-Allow-Origin", "https://alc-project-jtm7.vercel.app");
+  res.setHeader("Access-Control-Allow-Credentials", "true");
+  res.setHeader("Access-Control-Allow-Methods", "GET,POST,PUT,PATCH,DELETE,OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type,Authorization,X-Requested-With");
+  return res.status(200).end();
+});
 
 console.log("✅ CORS middleware loaded");
 /* --------------------------------------------------
