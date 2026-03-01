@@ -10,7 +10,7 @@ const app = express();
 const allowedOrigin = "https://alc-project-jtm7.vercel.app";
 
 // ------------------------------
-// GLOBAL LOGGER (ALL REQUESTS)
+// //GLOBAL LOGGER (ALL REQUESTS)
 // ------------------------------
 app.use((req, res, next) => {
   console.log("\n==============================");
