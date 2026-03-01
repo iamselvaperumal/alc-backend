@@ -114,15 +114,15 @@ app.use(cookieParser());
 // ------------------------------
 app.use("/api/auth", require("./routes/authRoutes"));
 app.use("/auth", require("./routes/authRoutes"));
-app.use("/api/departments", require("./routes/departmentRoutes"));
-app.use("/api/employees", require("./routes/employeeRoutes"));
-app.use("/api/projects", require("./routes/projectRoutes"));
-app.use("/api/attendance", require("./routes/attendanceRoutes"));
-app.use("/api/payroll", require("./routes/payrollRoutes"));
-app.use("/api/production", require("./routes/productionRoutes"));
-app.use("/api/orders", require("./routes/orderRoutes"));
-app.use("/api/enquiry", require("./routes/enquiryRoutes"));
-app.use("/api/awards", require("./routes/awardRoutes"));
+app.use("/departments", require("./routes/departmentRoutes"));
+app.use("/employees", require("./routes/employeeRoutes"));
+app.use("/projects", require("./routes/projectRoutes"));
+app.use("/attendance", require("./routes/attendanceRoutes"));
+app.use("/payroll", require("./routes/payrollRoutes"));
+app.use("/production", require("./routes/productionRoutes"));
+app.use("/orders", require("./routes/orderRoutes"));
+app.use("/enquiry", require("./routes/enquiryRoutes"));
+app.use("/awards", require("./routes/awardRoutes"));
 
 // ------------------------------
 // Root test route
