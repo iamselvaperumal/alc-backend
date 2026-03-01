@@ -10,6 +10,18 @@ const app = express();
 // Allowed origin for CORS
 const allowedOrigin = "https://alc-project-jtm7.vercel.app";
 
+
+app.use(cors({
+  origin: "https://alc-project-jtm7.vercel.app",
+  credentials: true,
+  methods: ["GET","POST","PUT","DELETE","OPTIONS"],
+  allowedHeaders: ["Content-Type","Authorization"]
+}));
+
+// Body parser
+app.use(express.json());
+
+
 // ------------------------------
 // GLOBAL LOGGER (ALL REQUESTS)
 // ------------------------------
@@ -43,7 +55,7 @@ app.use((req, res, next) => {
 // ------------------------------
 // Body parser & cookies
 // ------------------------------
-app.use(express.json());
+//app.use(express.json());
 app.use(cookieParser());
 
 // ------------------------------
