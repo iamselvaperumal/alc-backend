@@ -46,7 +46,7 @@ app.use((req, res, next) => {
 
   if (req.method === "OPTIONS") {
     console.log("⚡ OPTIONS request handled");
-    return res.sendStatus(204); // Preflight response
+    return res.sendStatus(200); // Preflight response
   }
 
   next();
