@@ -2,11 +2,10 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 
 const protect = async (req, res, next) => {
-
   log.info("token checking");
   // let token;
-console.log("test");
-  res.header("Access-Control-Allow-Origin", "https://alc-project-jtm7.vercel.app");
+  console.log("test");
+  res.header("Access-Control-Allow-Origin", "https://alc-tex.netlify.app");
   res.header("Access-Control-Allow-Credentials", "false");
   res.header("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
   res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
@@ -46,7 +45,6 @@ console.log("test");
 };
 
 const adminOnly = (req, res, next) => {
-
   console.log("error");
   if (req.user && req.user.role === "Admin") {
     next();

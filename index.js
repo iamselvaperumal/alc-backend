@@ -19,7 +19,7 @@ try {
 const app = express();
 
 // Allowed origin for CORS
-const allowedOrigin = "https://alc-project-jtm7.vercel.app";
+const allowedOrigin = "https://alc-tex.netlify.app";
 
 app.use(
   cors({
