@@ -9,7 +9,6 @@ const generateToken = (id) => {
 // @route   POST /api/auth/register
 // @access  Public (Initial Admin) / Private (Admin creates Employee)
 const registerUser = async (req, res) => {
-
   console.log("register process is called");
   const { username, email, password, role } = req.body;
   try {
@@ -48,13 +47,13 @@ const registerUser = async (req, res) => {
 const loginUser = async (req, res) => {
   const { email, password } = req.body;
 
-   console.log("login process is called");
+  console.log("login process is called");
   try {
     const user = await User.findOne({ email });
 
     if (user && (await user.matchPassword(password))) {
       const token = generateToken(user._id);
-      Set cookie (optional but good for security)
+      //  cookie (optional but good for security)
       res.cookie("token", token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production", // HTTPS only in production
