@@ -5,6 +5,19 @@ const cookieParser = require("cookie-parser");
 const mongoose = require("mongoose");
 const validateEnv = require("./config/validateEnv");
 
+
+dotenv.config();
+
+// Validate environment variables BEFORE doing anything else
+try {
+  validateEnv();
+} catch (error) {
+  console.error("❌ Validation Error");
+  console.error(error.message);
+  process.exit(1);
+}
+
+
 const app = express();
 
 // Allowed origin for CORS
@@ -22,6 +35,8 @@ app.use(cors({
 app.use(express.json());
 
 
+
+
 // ------------------------------
 // GLOBAL LOGGER (ALL REQUESTS)
 // ------------------------------
@@ -35,6 +50,47 @@ app.use((req, res, next) => {
   next();
 });
 
+
+// Database connection flag to prevent multiple connections
+let dbConnected = false;
+
+// Lazy database connection function (connects only when needed)
+const connectDB = async () => {
+  if (dbConnected) return;
+
+  try {
+    if (!process.env.MONGO_URI) {
+      throw new Error("MONGO_URI environment variable is not set");
+    }
+
+    await mongoose.connect(process.env.MONGO_URI, {
+      // Serverless-friendly options
+      serverSelectionTimeoutMS: 5000,
+      socketTimeoutMS: 45000,
+    });
+
+    dbConnected = true;
+    console.log(`MongoDB Connected: ${mongoose.connection.host}`);
+  } catch (error) {
+    console.error(`Database Connection Error: ${error.message}`);
+    dbConnected = false;
+    throw error; // Re-throw to handle in middleware
+  }
+};
+
+// Middleware to connect to DB before each request
+app.use(async (req, res, next) => {
+  try {
+    await connectDB();
+    next();
+  } catch (error) {
+    res.status(500).json({
+      error: "Database connection failed",
+      message:
+        process.env.NODE_ENV === "development" ? error.message : undefined,
+    });
+  }
+});
 // ------------------------------
 // CORS HANDLER
 // ------------------------------
