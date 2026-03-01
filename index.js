@@ -66,6 +66,8 @@ app.use((req, res, next) => {
   next();
 });
 console.log("✅ CORS middleware loaded");
+
+app.use(cors());
 /* --------------------------------------------------
    AFTER CORS CHECKPOINT
 -------------------------------------------------- */
