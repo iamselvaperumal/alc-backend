@@ -11,7 +11,7 @@ const validateEnv = () => {
   });
 
   if (missing.length > 0) {
-    const errorMsg = `❌ FATAL: Missing required environment variables: ${missing.join(", ")}\n\nPlease set these in your Vercel project settings:\n${missing.map((v) => `  - ${v}`).join("\n")}\n\n👉 Go to: https://vercel.com/dashboard -> Your Project -> Settings -> Environment Variables`;
+    const errorMsg = ` FATAL: Missing required environment variables: ${missing.join(", ")}\n\nPlease set these in your Vercel project settings:\n${missing.map((v) => `  - ${v}`).join("\n")}\n\n👉 Go to: https://vercel.com/dashboard -> Your Project -> Settings -> Environment Variables`;
 
     console.error(errorMsg);
     throw new Error(errorMsg); // Throw instead of exit for serverless
