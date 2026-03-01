@@ -53,14 +53,6 @@ const loginUser = async (req, res) => {
 
     if (user && (await user.matchPassword(password))) {
       const token = generateToken(user._id);
-      //  cookie (optional but good for security)
-      res.cookie("token", token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production", // HTTPS only in production
-        sameSite: "none", // VERY IMPORTANT for cross-domain
-        maxAge: 30 * 24 * 60 * 60 * 1000,
-      });
-
       console.log("login successful, token generated and cookie set");
       res.status(200).json({
         _id: user._id,
