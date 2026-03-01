@@ -60,7 +60,9 @@ const loginUser = async (req, res) => {
         sameSite: "none", // VERY IMPORTANT for cross-domain
         maxAge: 30 * 24 * 60 * 60 * 1000,
       });
-      res.json({
+
+      console.log("login successful, token generated and cookie set");
+      res.status(200).json({
         _id: user._id,
         username: user.username,
         email: user.email,

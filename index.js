@@ -5,7 +5,6 @@ const cookieParser = require("cookie-parser");
 const mongoose = require("mongoose");
 const validateEnv = require("./config/validateEnv");
 
-
 dotenv.config();
 
 // Validate environment variables BEFORE doing anything else
@@ -17,25 +16,22 @@ try {
   process.exit(1);
 }
 
-
 const app = express();
 
 // Allowed origin for CORS
 const allowedOrigin = "https://alc-project-jtm7.vercel.app";
 
-
-app.use(cors({
-  origin: "https://alc-tex.netlify.app",
-  credentials: true,
-  methods: ["GET","POST","PUT","DELETE","OPTIONS"],
-  allowedHeaders: ["Content-Type","Authorization"]
-}));
+app.use(
+  cors({
+    origin: "https://alc-tex.netlify.app",
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  }),
+);
 
 // Body parser
 app.use(express.json());
-
-
-
 
 // ------------------------------
 // GLOBAL LOGGER (ALL REQUESTS)
@@ -44,12 +40,12 @@ app.use((req, res, next) => {
   console.log("\n==============================");
   console.log("➡️ Incoming Request");
   console.log("Method:", req.method);
+  x;
   console.log("URL:", req.url);
   console.log("Origin:", req.headers.origin);
   console.log("==============================");
   next();
 });
-
 
 // Database connection flag to prevent multiple connections
 let dbConnected = false;
