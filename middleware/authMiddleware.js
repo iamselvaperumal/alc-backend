@@ -2,6 +2,8 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 
 const protect = async (req, res, next) => {
+
+  log.info("token checking");
   // let token;
 console.log("test");
   res.header("Access-Control-Allow-Origin", "https://alc-project-jtm7.vercel.app");
