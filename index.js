@@ -25,7 +25,7 @@ const allowedOrigin = "https://alc-project-jtm7.vercel.app";
 
 
 app.use(cors({
-  origin: "https://alc-testing.netlify.app",
+  origin: "https://alc-tex.netlify.app",
   credentials: true,
   methods: ["GET","POST","PUT","DELETE","OPTIONS"],
   allowedHeaders: ["Content-Type","Authorization"]
