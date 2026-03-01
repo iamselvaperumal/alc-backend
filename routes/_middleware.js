@@ -1,4 +1,5 @@
 export function middleware(req) {
+  console.log("req");
   if (req.method === "OPTIONS") {
     return new Response(null, {
       headers: {
