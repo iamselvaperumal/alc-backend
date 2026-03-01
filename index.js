@@ -7,10 +7,11 @@ const validateEnv = require("./config/validateEnv");
 
 const app = express();
 
+// Allowed origin for CORS
 const allowedOrigin = "https://alc-project-jtm7.vercel.app";
 
 // ------------------------------
-// //GLOBAL LOGGER (ALL REQUESTS)
+// GLOBAL LOGGER (ALL REQUESTS)
 // ------------------------------
 app.use((req, res, next) => {
   console.log("\n==============================");
@@ -23,7 +24,7 @@ app.use((req, res, next) => {
 });
 
 // ------------------------------
-// CORS HANDLER (manual for testing)
+// CORS HANDLER
 // ------------------------------
 app.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", allowedOrigin);
@@ -33,46 +34,50 @@ app.use((req, res, next) => {
 
   if (req.method === "OPTIONS") {
     console.log("⚡ OPTIONS request handled");
-    return res.sendStatus(204); // preflight response
+    return res.sendStatus(204); // Preflight response
   }
 
   next();
 });
 
 // ------------------------------
-// Body parser for POST
+// Body parser & cookies
 // ------------------------------
 app.use(express.json());
+app.use(cookieParser());
 
 // ------------------------------
-// POST TEST ROUTE
+// Routes
 // ------------------------------
-app.post("/", (req, res) => {
-  console.log("⚡ POST request received");
-  console.log("Body:", req.body);
-  res.json({ message: "POST received!" });
+app.use("/api/auth", require("./routes/authRoutes"));
+app.use("/auth", require("./routes/authRoutes"));
+app.use("/api/departments", require("./routes/departmentRoutes"));
+app.use("/api/employees", require("./routes/employeeRoutes"));
+app.use("/api/projects", require("./routes/projectRoutes"));
+app.use("/api/attendance", require("./routes/attendanceRoutes"));
+app.use("/api/payroll", require("./routes/payrollRoutes"));
+app.use("/api/production", require("./routes/productionRoutes"));
+app.use("/api/orders", require("./routes/orderRoutes"));
+app.use("/api/enquiry", require("./routes/enquiryRoutes"));
+app.use("/api/awards", require("./routes/awardRoutes"));
+
+// ------------------------------
+// Root test route
+// ------------------------------
+app.get("/", (req, res) => {
+  console.log("⚡ Root route hit");
+  res.send("API is running...");
 });
 
 // ------------------------------
-// Start server
+// 404 handler
 // ------------------------------
-// const PORT = 5000;
-// app.listen(PORT, () => {
-//   console.log(`Server running on http://localhost:${PORT}`);
-// });
-/* --------------------------------------------------
-   404 HANDLER
--------------------------------------------------- */
 app.use((req, res) => {
-  console.log("❓ 404 HANDLER HIT:", req.method, req.url);
+  console.log("⚠️ 404 HANDLER HIT:", req.method, req.url);
   res.status(404).json({ error: "Not Found" });
 });
 
-// Start server
-// const PORT = process.env.PORT || 5000;
-// app.listen(PORT, () => {
-//   console.log(`Server running on http://localhost:${PORT}`);
-// });
-
-//const app = require("../server"); // path to your main file
+// ------------------------------
+// Export app for Vercel
+// ------------------------------
 module.exports = app;
