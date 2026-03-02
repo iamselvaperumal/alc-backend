@@ -2,7 +2,7 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 
 const protect = async (req, res, next) => {
-  log.info("token checking");
+  console.log("token checking");
   // let token;
   res.header("Access-Control-Allow-Origin", "https://alc-tex.netlify.app");
   res.header("Access-Control-Allow-Credentials", "false");
