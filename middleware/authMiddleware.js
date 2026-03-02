@@ -45,7 +45,10 @@ const protect = async (req, res, next) => {
 
 const adminOnly = (req, res, next) => {
   console.log("error");
+  console.log(req.user.role);
   if (req.user && req.user.role === "Admin") {
+    console.log("admin");
+    console.log(req.user.role);
     next();
   } else {
     res.status(403).json({ message: "Not authorized as an admin" });
